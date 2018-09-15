@@ -1,8 +1,6 @@
 require "ruby2d"
 require "byebug"
 
-set title: "Ruby Hunter"
-
 class Grid < Struct.new(:config, keyword_init: true)
   class Config < Struct.new(:cols, :rows, :square_size, keyword_init: true)
     def self.default
@@ -75,43 +73,51 @@ class Snake < Struct.new(:grid_config, :coords, :direction, keyword_init: true)
   end
 end
 
-puts get :width
-puts get :height
-grid_config = Grid::Config.new(
-  rows: 400/50,
-  cols: 600/50,
-  square_size: 50
-)
+class SnakeGame
+  
+  def start!
+    extend Ruby2D::DSL
+    set title: "Snake"
 
-grid = Grid.new(config: grid_config)
-snake = Snake.new(
-  grid_config: grid_config,
-  coords: [Coord.new(2,2), Coord.new(2,3), Coord.new(3,3), Coord.new(3,2), Coord.new(3,1)],
-  direction: Direction::NORTH)
+    grid_config = Grid::Config.new(rows: 400/50, cols: 600/50, square_size: 50)
+    grid = Grid.new(config: grid_config)
+    snake = Snake.new(
+      grid_config: grid_config,
+      coords: [Coord.new(2,2), Coord.new(2,3), Coord.new(3,3), Coord.new(3,2), Coord.new(3,1)],
+      direction: Direction::NORTH)
 
-grid.render!
-snake.render!
+    grid.render!
+    snake.render!
+    next_direction = snake.direction
 
-on :key_down do |e|
-  puts "#{e.key} was pressed down!"
-  case e.key
-  when "up"
-    snake.direction = Direction::NORTH if snake.direction != Direction::SOUTH
-  when "right"
-    snake.direction = Direction::EAST if snake.direction != Direction::WEST
-  when "down"
-    snake.direction = Direction::SOUTH if snake.direction != Direction::NORTH
-  when "left"
-    snake.direction = Direction::WEST if snake.direction != Direction::EAST
-  end
-end
+    on :key_down do |e|
+      puts "#{e.key} was pressed down!"
+      case e.key
+      when "up"
+        next_direction = Direction::NORTH if snake.direction != Direction::SOUTH
+      when "right"
+        next_direction = Direction::EAST if snake.direction != Direction::WEST
+      when "down"
+        next_direction = Direction::SOUTH if snake.direction != Direction::NORTH
+      when "left"
+        next_direction = Direction::WEST if snake.direction != Direction::EAST
+      end
+    end
 
-last_update = Time.now
-update do
-  if Time.now - last_update > 0.5
     last_update = Time.now
-    snake.advance
+
+    food = Coord.new(rand(), rand())
+
+    update do
+      if Time.now - last_update > 0.5
+        last_update = Time.now
+        snake.direction = next_direction
+        snake.advance
+      end
+    end
+
+    show
   end
 end
 
-show
+SnakeGame.new.start!
