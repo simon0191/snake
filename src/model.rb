@@ -15,10 +15,22 @@ module Model
   class Grid < Struct.new(:rows, :cols)
   end
 
-  class Game < Struct.new(:finished)
+  class Game < Struct.new(:finished, :squares_per_second, :next_direction)
   end
 
   class World < Struct.new(:grid, :snake, :food, :game)
+  end
+
+  def self.init_world
+    Model::World.new(
+      Model::Grid.new(8, 12,),
+      Model::Snake.new(
+        [Model::Coordinate.new(2,2), Model::Coordinate.new(2,1)],
+        Model::Direction::EAST
+      ),
+      Model::Coordinate.new(0,0),
+      Model::Game.new(false, 1.0, Model::Direction::EAST)
+    )
   end
 end
 

@@ -6,18 +6,16 @@ require_relative "actions"
 class App
   def start!
     extend Ruby2D::DSL
-    world = init_world
+    world = Model::init_world
     renderer = View::Ruby2DRenderer.new(50)
-    set title: "Snake"
-
     on :key_down do |event|
-      handle_key_down_event!(world, event)
+      world = handle_key_down_event(world, event)
     end
 
     last_update = Time.now
 
     update do
-      if Time.now - last_update > 0.5
+      if Time.now - last_update > (1.0/world.game.squares_per_second)
         last_update = Time.now
         Actions::move_snake!(world)
         renderer.render!(world)
@@ -28,34 +26,28 @@ class App
   end
 
   private
-  def init_world
-    Model::World.new(
-      Model::Grid.new(8, 12,),
-      Model::Snake.new(
-        [Model::Coordinate.new(2,2), Model::Coordinate.new(2,1)],
-        Model::Direction::EAST
-      ),
-      Model::Coordinate.new(0,0),
-      Model::Game.new(false)
-    )
-  end
 
-  def handle_key_down_event!(world, event)
-    next_direction = case event.key
-      when "up"
-        Model::Direction::NORTH
-      when "right"
-        Model::Direction::EAST
-      when "down"
-        Model::Direction::SOUTH
-      when "left"
-        Model::Direction::WEST
-      else
-        world.snake.direction
-      end
-    Actions::change_snake_direction!(world, next_direction)
+  def handle_key_down_event(world, event)
+    case event.key
+    when "up", "W", "w"
+      Actions::change_snake_direction!(world, Model::Direction::NORTH)
+    when "right", "D", "d"
+      Actions::change_snake_direction!(world, Model::Direction::EAST)
+    when "down", "S", "s"
+      Actions::change_snake_direction!(world, Model::Direction::SOUTH)
+    when "left", "A", "a"
+      Actions::change_snake_direction!(world, Model::Direction::WEST)
+    when "r"
+      Actions::restart!
+    when "1"
+      Actions::decrease_speed!(world)
+    when "2"
+      Actions::increase_speed!(world)
+    else
+      world
+    end
   end
   
 end
-
+set(title: "Snake", width: 600, height: 400, viewport_width: 600, viewport_height: 400)
 App.new.start!

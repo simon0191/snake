@@ -37,11 +37,24 @@ actions:
     - generate a new piece of food
   - else
     - move the snake to the next coord
+    - increase speed
 =end
 
 module Actions
   def self.change_snake_direction!(world, direction)
-    world.snake.direction = direction
+    world.game.next_direction = case direction
+    when Model::Direction::NORTH
+      world.snake.direction != Model::Direction::SOUTH ? direction : world.snake.direction
+    when Model::Direction::EAST
+      world.snake.direction != Model::Direction::WEST ? direction : world.snake.direction
+    when Model::Direction::SOUTH
+      world.snake.direction != Model::Direction::NORTH ? direction : world.snake.direction
+    when Model::Direction::WEST
+      world.snake.direction != Model::Direction::EAST ? direction : world.snake.direction
+    else
+      world.snake.direction
+    end
+    puts world.inspect
     world
   end
 
@@ -53,17 +66,36 @@ module Actions
     elsif has_food?(world, next_coord)
       grow_snake!(world, next_coord)
       generate_new_piece_of_food!(world)
+      increase_speed!(world)
     else
       move_snake_to_coord!(world, next_coord)
     end
+    puts world.inspect
+    world
+  end
 
+  def self.restart!
+    world = Model::init_world
+    puts world.inspect
+    world
+  end
+
+  def self.increase_speed!(world)
+    world.game.squares_per_second += 0.1
+    puts world.inspect
+    world
+  end
+
+  def self.decrease_speed!(world)
+    world.game.squares_per_second = [world.game.squares_per_second - 0.1, 1].max
+    puts world.inspect
     world
   end
 
   private
 
   def self.calc_next_coord(world)
-    case world.snake.direction
+    case world.game.next_direction
     when Model::Direction::NORTH
       Model::Coordinate.new(world.snake.coordinates.first.row - 1, world.snake.coordinates.first.col)
     when Model::Direction::EAST
@@ -109,6 +141,7 @@ module Actions
   end
 
   def self.move_snake_to_coord!(world, next_coord)
+    world.snake.direction = world.game.next_direction
     world.snake.coordinates.prepend(next_coord)
     world.snake.coordinates.pop
   end
