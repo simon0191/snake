@@ -46,20 +46,10 @@ class Coord < Struct.new(:x, :y)
 end
 
 class Direction < Struct.new(:coord)
-
-  def self.build(dir)
-    case dir
-    when :north, :NORTH
-      @@north ||= Direction.new(Coord.new(0, -1))
-    when :east, :EAST
-      @@east ||= Direction.new(Coord.new(1, 0))
-    when :south, :SOUTH
-      @@south ||= Direction.new(Coord.new(0, 1))
-    when :west, :WEST
-      @@west ||= Direction.new(Coord.new(-1, 0))
-    end
-  end
-
+  NORTH = Direction.new(Coord.new(0, -1)).freeze
+  EAST = Direction.new(Coord.new(1, 0)).freeze
+  SOUTH = Direction.new(Coord.new(0, 1)).freeze
+  WEST = Direction.new(Coord.new(-1, 0)).freeze
 end
 
 class Snake < Struct.new(:grid_config, :coords, :direction, keyword_init: true)
@@ -97,18 +87,28 @@ grid = Grid.new(config: grid_config)
 snake = Snake.new(
   grid_config: grid_config,
   coords: [Coord.new(2,2), Coord.new(2,3), Coord.new(3,3), Coord.new(3,2), Coord.new(3,1)],
-  direction: Direction.build(:north))
+  direction: Direction::NORTH)
 
 grid.render!
 snake.render!
 
-def tick
-  snake.advance
+on :key_down do |e|
+  puts "#{e.key} was pressed down!"
+  case e.key
+  when "up"
+    snake.direction = Direction::NORTH if snake.direction != Direction::SOUTH
+  when "right"
+    snake.direction = Direction::EAST if snake.direction != Direction::WEST
+  when "down"
+    snake.direction = Direction::SOUTH if snake.direction != Direction::NORTH
+  when "left"
+    snake.direction = Direction::WEST if snake.direction != Direction::EAST
+  end
 end
 
 last_update = Time.now
 update do
-  if Time.now - last_update > 1
+  if Time.now - last_update > 0.5
     last_update = Time.now
     snake.advance
   end
