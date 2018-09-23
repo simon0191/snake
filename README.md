@@ -1,6 +1,8 @@
-# Ruby hunter
+# Snake game
 
 Example of ruby2d gem
+
+![demo](/assets/snake_demo.gif)
 
 ## Run
 

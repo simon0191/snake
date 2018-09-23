@@ -17,7 +17,7 @@ class App
     update do
       if Time.now - last_update > (1.0/world.game.squares_per_second)
         last_update = Time.now
-        Actions::move_snake!(world)
+        Actions::move_snake!(world) unless world.game.paused
         renderer.render!(world)
       end
     end
@@ -43,6 +43,8 @@ class App
       Actions::decrease_speed!(world)
     when "2"
       Actions::increase_speed!(world)
+    when "space"
+      Actions::toggle_pause!(world)
     else
       world
     end

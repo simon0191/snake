@@ -1,44 +1,4 @@
 require_relative "model"
-=begin
-{
-  game: {
-    finished: true
-  },
-  world: {
-    grid: {
-      cols: 10,
-      rows: 10
-    },
-    snake : {
-      coordinates: [
-        {row: 1, col: 1}, // Coordinate
-        {row: 2, col: 1}
-      ],
-      direction: 'NORTH'
-    },
-    food: {
-      row: 7, // Coordinate
-      col: 9
-    }
-  }
-}
-
-actions:
-
-- arrow key press -> 
-  - change direction of snake
-- snake move ->
-  - if the next coord is outside of the grid ->
-    - end game
-  - if the next coord is overlaping the snake ->
-    - end game
-  - if there's food in the next coord ->
-    - grow the snake ("eat the piece of food")
-    - generate a new piece of food
-  - else
-    - move the snake to the next coord
-    - increase speed
-=end
 
 module Actions
   def self.change_snake_direction!(world, direction)
@@ -88,6 +48,12 @@ module Actions
 
   def self.decrease_speed!(world)
     world.game.squares_per_second = [world.game.squares_per_second - 0.1, 1].max
+    puts world.inspect
+    world
+  end
+
+  def self.toggle_pause!(world)
+    world.game.paused = !world.game.paused
     puts world.inspect
     world
   end
