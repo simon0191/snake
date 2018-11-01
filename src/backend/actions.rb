@@ -1,6 +1,18 @@
 require_relative "model"
 
 module Actions
+  def self.tick!(world, seconds)
+    if !world.game.finished && seconds > 0
+      world.game.curr_time += seconds
+      should_update = world.game.curr_time - world.game.last_update > (1.0/world.game.squares_per_second)
+      if !world.game.paused && should_update
+        Actions::move_snake!(world)
+        world.game.last_update = world.game.curr_time
+      end
+    end
+    world
+  end
+
   def self.change_snake_direction!(world, direction)
     world.game.next_direction = case direction
     when Model::Direction::NORTH
@@ -14,7 +26,6 @@ module Actions
     else
       world.snake.direction
     end
-    puts world.inspect
     world
   end
 
@@ -30,31 +41,26 @@ module Actions
     else
       move_snake_to_coord!(world, next_coord)
     end
-    puts world.inspect
     world
   end
 
-  def self.restart!
+  def self.restart!(world)
     world = Model::init_world
-    puts world.inspect
     world
   end
 
   def self.increase_speed!(world)
     world.game.squares_per_second += 0.1
-    puts world.inspect
     world
   end
 
   def self.decrease_speed!(world)
     world.game.squares_per_second = [world.game.squares_per_second - 0.1, 1].max
-    puts world.inspect
     world
   end
 
   def self.toggle_pause!(world)
     world.game.paused = !world.game.paused
-    puts world.inspect
     world
   end
 
