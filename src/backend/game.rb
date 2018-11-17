@@ -14,6 +14,7 @@ class SnakeGame
     last_update = Time.now
 
     loop do
+      break if world.game.exit
       prev_hash = world.hash
       send_action(:tick!, Time.now - last_update)
       renderer.render!(world) if prev_hash != world.hash

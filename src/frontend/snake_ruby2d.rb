@@ -9,17 +9,22 @@ module Frontend
       self.pixel_size = pixel_size
     end
 
-    def start!
+    def prepare!(world)
       raise "action_handler is not set" if action_handler.nil?
+      self.world = world
 
       extend Ruby2D::DSL
       set(title: "Snake", width: 600, height: 400, viewport_width: 600, viewport_height: 400)
-      extend Ruby2D::DSL
       on :key_down do |event|
         handle_key_down_event(event)
       end
+    end
+
+    def start!
+      extend Ruby2D::DSL
       curr_hash = nil
       update do
+        close if world.game.exit
         if world.hash != curr_hash
           if world.game.finished
             puts "Finished"
@@ -86,6 +91,8 @@ module Frontend
         action_handler.send_action(:increase_speed!)
       when "space"
         action_handler.send_action(:toggle_pause!)
+      when "q", "Q"
+        action_handler.send_action(:exit_game!)
       end
     end
   end

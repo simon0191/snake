@@ -64,6 +64,11 @@ module Actions
     world
   end
 
+  def self.exit_game!(world)
+    world.game.exit = true
+    world
+  end
+
   private
 
   def self.calc_next_coord(world)

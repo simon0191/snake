@@ -15,7 +15,7 @@ module Model
   class Grid < Struct.new(:rows, :cols)
   end
 
-  class Game < Struct.new(:finished, :squares_per_second, :next_direction, :paused, :curr_time, :last_update)
+  class Game < Struct.new(:finished, :squares_per_second, :next_direction, :paused, :curr_time, :last_update, :exit)
   end
 
   class World < Struct.new(:grid, :snake, :food, :game)
@@ -29,7 +29,7 @@ module Model
         Model::Direction::EAST
       ),
       Model::Coordinate.new(0,0),
-      Model::Game.new(false, 3.0, Model::Direction::EAST, false, 0.0, 0.0)
+      Model::Game.new(false, 3.0, Model::Direction::EAST, false, 0.0, 0.0, false)
     )
   end
 end
