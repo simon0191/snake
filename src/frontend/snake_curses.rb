@@ -53,13 +53,13 @@ module Frontend
 
     def handle_key_down_event(event)
       case event
-      when Curses::KEY_UP, "W", "w"
+      when "w"
         action_handler.send_action(:change_snake_direction!, Model::Direction::NORTH)
-      when Curses::KEY_RIGHT, "D", "d"
+      when "d"
         action_handler.send_action(:change_snake_direction!, Model::Direction::EAST)
-      when Curses::KEY_DOWN, "S", "s"
+      when "s"
         action_handler.send_action(:change_snake_direction!, Model::Direction::SOUTH)
-      when Curses::KEY_LEFT, "A", "a"
+      when "a"
         action_handler.send_action(:change_snake_direction!, Model::Direction::WEST)
       when "r"
         action_handler.send_action(:restart!)
